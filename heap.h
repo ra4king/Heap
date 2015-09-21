@@ -23,8 +23,6 @@ void* pop(struct heap_t* heap);
 
 int size(struct heap_t* heap);
 
-void** get_data(struct heap_t* heap);
-
 void delete_heap(struct heap_t* heap, free_func free_f);
 
 #endif

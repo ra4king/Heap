@@ -103,10 +103,6 @@ int size(struct heap_t* heap) {
 	return heap->size;
 }
 
-void** get_data(struct heap_t* heap) {
-	return heap->data;
-}
-
 void delete_heap(struct heap_t* heap, free_func free_f) {
 	for(int i = 0; i < heap->size; i++) {
 		free_f(heap->data[i]);
