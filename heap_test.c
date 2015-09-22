@@ -51,7 +51,6 @@ int main() {
 
 	printf("\nPopping elements:\n");
 
-	struct myfancystruct_t* prev = NULL;
 	while(heap_size(heap)) {
 		struct myfancystruct_t* fancy = heap_pop(heap);
 
@@ -61,16 +60,9 @@ int main() {
 			printf(" - INVALID FANCY!");
 		}
 
-		if(prev != NULL && fancy->value < prev->value) {
-			printf(" - OUT OF ORDER!!!\n");
-		}
-		else {
-			printf("\n");
-		}
+		printf("\n");
 
 		free(fancy);
-
-		prev = fancy;
 	}
 
 	printf("\nMore random testing...\n");
