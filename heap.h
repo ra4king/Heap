@@ -10,19 +10,19 @@ Frees the resource
 */
 typedef void (*free_func)(void*);
 
-struct heap_t* create_heap(compare_func comp);
+struct heap_t* heap_create(compare_func comp);
 
 /*
 Returns 0 on success, -1 on failure
 */
-int insert(struct heap_t* heap, void* elem);
+int heap_insert(struct heap_t* heap, void* elem);
 
-void* peek(struct heap_t* heap);
+void* heap_peek(struct heap_t* heap);
 
-void* pop(struct heap_t* heap);
+void* heap_pop(struct heap_t* heap);
 
-int size(struct heap_t* heap);
+int heap_size(struct heap_t* heap);
 
-void delete_heap(struct heap_t* heap, free_func free_f);
+void heap_delete(struct heap_t* heap, free_func free_f);
 
 #endif

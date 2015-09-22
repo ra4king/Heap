@@ -1,6 +1,7 @@
 #include <stdlib.h>
 #include <stdint.h>
 #include <stdio.h>
+#include <time.h>
 #include "heap.h"
 
 int compare(void* a, void* b) {
@@ -8,32 +9,36 @@ int compare(void* a, void* b) {
 }
 
 int main() {
-	struct heap_t* heap = create_heap(compare);
+	struct heap_t* heap = heap_create(compare);
 
-	insert(heap, (void*)4);
-	insert(heap, (void*)5);
-	insert(heap, (void*)10);
-	insert(heap, (void*)1);
-	insert(heap, (void*)-5);
-	insert(heap, (void*)7);
-	insert(heap, (void*)10);
-	insert(heap, (void*)100);
-	insert(heap, (void*)42);
-	insert(heap, (void*)6);
-	insert(heap, (void*)2);;
-	insert(heap, (void*)-10);
-	insert(heap, (void*)34);
-	insert(heap, (void*)50);
+	printf("Adding values...");
+	
+	srand((unsigned int)time(NULL));
+	for(int i = 0; i < 100; i++) {
+		heap_insert(heap, (void*)(intptr_t)rand());
+	}
 
-	printf("Heap size: %d\n", size(heap));
+	printf("Heap size: %d\n", heap_size(heap));
 
 	printf("\nPopping elements:\n");
 
-	while(size(heap)) {
-		printf("Next element: %ld\n", (intptr_t)pop(heap));
+	intptr_t prev = -1;
+	while(heap_size(heap)) {
+		intptr_t value = (intptr_t)heap_pop(heap);
+
+		printf("Next element: %ld", value);
+
+		if(prev != -1 && value < prev) {
+			printf(" - OUT OF ORDER!!!\n");
+		}
+		else {
+			printf("\n");
+		}
+
+		prev = value;
 	}
 
-	delete_heap(heap, free);
+	heap_delete(heap, free);
 
 	return 0;
 }

@@ -1,4 +1,5 @@
 #include <stdlib.h>
+#include <stdio.h>
 #include "heap.h"
 
 struct heap_t {
@@ -10,7 +11,7 @@ struct heap_t {
 
 #define INITIAL_SIZE 10
 
-struct heap_t* create_heap(compare_func compare) {
+struct heap_t* heap_create(compare_func compare) {
 	struct heap_t* heap = malloc(sizeof(struct heap_t));
 	if(!heap)
 		return NULL;
@@ -29,16 +30,19 @@ struct heap_t* create_heap(compare_func compare) {
 }
 
 static int resize_heap(struct heap_t* heap) {
-	int newCap = heap->capacity * 3 / 2;
-	heap->data = realloc(heap->data, newCap);
-	if(!heap->data)
+	unsigned int newCap = heap->capacity * 3 / 2;
+	printf("Resizing heap: current capacity: %d, new capacity: %d\n", heap->capacity, newCap);
+	heap->data = realloc(heap->data, newCap * sizeof(void*));
+	if(!heap->data) {
+		printf("What in the hell happened... realloc failed?!\n");
 		return -1;
+	}
 
 	heap->capacity = newCap;
 	return 0;
 }
 
-int insert(struct heap_t* heap, void* elem) {
+int heap_insert(struct heap_t* heap, void* elem) {
 	if(!elem)
 		return -1;
 
@@ -60,11 +64,11 @@ int insert(struct heap_t* heap, void* elem) {
 	return 0;
 }
 
-void* peek(struct heap_t* heap) {
+void* heap_peek(struct heap_t* heap) {
 	return heap->size ? heap->data[0] : NULL;
 }
 
-void* pop(struct heap_t* heap) {
+void* heap_pop(struct heap_t* heap) {
 	if(!heap->size)
 		return NULL;
 
@@ -99,11 +103,11 @@ void* pop(struct heap_t* heap) {
 	return elem;
 }
 
-int size(struct heap_t* heap) {
+int heap_size(struct heap_t* heap) {
 	return heap->size;
 }
 
-void delete_heap(struct heap_t* heap, free_func free_f) {
+void heap_delete(struct heap_t* heap, free_func free_f) {
 	for(int i = 0; i < heap->size; i++) {
 		free_f(heap->data[i]);
 	}

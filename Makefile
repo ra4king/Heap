@@ -1,6 +1,6 @@
 CFILES = heap.c heap_test.c
 HFILES = heap.h
-OPTIONS = -std=c99 -pedantic -Wall -Wextra -Werror
+OPTIONS = -g -std=c99 -pedantic -Wall -Wextra -Werror
 OUTPUT = heap_test
 
 all:
