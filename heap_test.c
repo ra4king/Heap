@@ -4,39 +4,106 @@
 #include <time.h>
 #include "heap.h"
 
+struct myfancystruct_t {
+	int value;
+	int specialvalue1;
+	int specialvalue2;
+	int specialvalue3;
+};
+
+void initialize_fancy(struct myfancystruct_t* fancy, int value) {
+	fancy->value = value;
+	fancy->specialvalue1 = fancy->value * 5;
+	fancy->specialvalue2 = fancy->specialvalue1 >> 2;
+	fancy->specialvalue3 = fancy->specialvalue2 & 0x5353;
+}
+
+int check_fancy(struct myfancystruct_t* fancy) {
+	struct myfancystruct_t clone;
+	initialize_fancy(&clone, fancy->value);
+	if(clone.specialvalue1 != fancy->specialvalue1)
+		return 0;
+	if(clone.specialvalue2 != fancy->specialvalue2)
+		return 0;
+	if(clone.specialvalue3 != fancy->specialvalue3)
+		return 0;
+
+	return 1;
+}
+
 int compare(void* a, void* b) {
-	return (intptr_t)a - (intptr_t)b;
+	return ((struct myfancystruct_t*)a)->value - ((struct myfancystruct_t*)b)->value;
 }
 
 int main() {
 	struct heap_t* heap = heap_create(compare);
 
 	printf("Adding values...");
-	
+
 	srand((unsigned int)time(NULL));
-	for(int i = 0; i < 100; i++) {
-		heap_insert(heap, (void*)(intptr_t)rand());
+	for(int i = 0; i < 10000; i++) {
+		struct myfancystruct_t* fancy = malloc(sizeof(struct myfancystruct_t));
+		initialize_fancy(fancy, rand());
+		heap_insert(heap, fancy);
 	}
 
 	printf("Heap size: %d\n", heap_size(heap));
 
 	printf("\nPopping elements:\n");
 
-	intptr_t prev = -1;
+	struct myfancystruct_t* prev = NULL;
 	while(heap_size(heap)) {
-		intptr_t value = (intptr_t)heap_pop(heap);
+		struct myfancystruct_t* fancy = heap_pop(heap);
 
-		printf("Next element: %ld", value);
+		printf("Next element: %d", fancy->value);
 
-		if(prev != -1 && value < prev) {
+		if(!check_fancy(fancy)) {
+			printf(" - INVALID FANCY!");
+		}
+
+		if(prev != NULL && fancy->value < prev->value) {
 			printf(" - OUT OF ORDER!!!\n");
 		}
 		else {
 			printf("\n");
 		}
 
-		prev = value;
+		free(fancy);
+
+		prev = fancy;
 	}
+
+	printf("\nMore random testing...\n");
+
+	for(int i = 0; i < 100000; i++) {
+		if((i / 10) % 3 != 0) {
+			struct myfancystruct_t* fancy = malloc(sizeof(struct myfancystruct_t));
+			initialize_fancy(fancy, rand());
+			heap_insert(heap, fancy);
+		}
+		else {
+			struct myfancystruct_t* fancy = heap_pop(heap);
+
+			if(!fancy) {
+				printf("Pop returned NULL, heap size: %d\n", heap_size(heap));
+			}
+			else if(!check_fancy(fancy)) {
+				printf("INVALID FANCY!\n");
+			}
+
+			free(fancy);
+		}
+	}
+
+	while(heap_size(heap)) {
+		struct myfancystruct_t* fancy = heap_pop(heap);
+		if(!check_fancy(fancy)) {
+			printf("INVALID FANCY!\n");
+		}
+		free(fancy);
+	}
+
+	printf("SUCCESS!\n");
 
 	heap_delete(heap, free);
 
